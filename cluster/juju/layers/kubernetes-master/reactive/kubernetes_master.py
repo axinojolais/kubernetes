@@ -27,7 +27,8 @@ from charmhelpers.fetch import apt_install
 
 
 dashboard_templates = [
-    'kubernetes-dashboard.yaml',
+    'dashboard-controller.yaml',
+    'dashboard-service.yaml',
     'influxdb-grafana-controller.yaml',
     'influxdb-service.yaml',
     'grafana-service.yaml',

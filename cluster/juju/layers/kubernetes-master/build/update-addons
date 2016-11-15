@@ -1,0 +1,31 @@
+#!/bin/bash
+set -eux
+
+cd $(dirname $0)
+
+target=../templates/addons
+
+# get kubernetes repo
+if [ -d kubernetes ]; then
+  cd kubernetes
+  git pull
+  cd ..
+else
+  git clone https://github.com/kubernetes/kubernetes.git
+fi
+
+# start from a clean folder
+rm -rf $target
+mkdir $target
+
+# copy the addons over
+cp kubernetes/cluster/addons/dashboard/*.yaml $target
+for file in kubernetes/cluster/addons/dns/*.yaml.in; do
+  cp $file $target/$(echo $(basename $file) | sed 's/skydns/kubedns/' | sed 's/\.in//')
+done
+cp kubernetes/cluster/addons/cluster-monitoring/influxdb/*.yaml $target
+
+# replace amd64 with {{ arch }}
+for file in $target/*.yaml; do
+  sed -i 's/amd64/{{ arch }}/g' $file
+done
